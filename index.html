@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MonAI - Control de Finanzas</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header>
+        <h1>Control de Finanzas - MonAI</h1>
+    </header>
+
+    <div class="container">
+        <div class="summary">
+            <h2>Resumen de Finanzas</h2>
+            <div class="total">
+                <p>Total Gastado: $<span id="total-expenses">0.00</span></p>
+                <p>Total Ingresos: $<span id="total-incomes">0.00</span></p>
+                <p><strong>Dinero Disponible: $<span id="available-money">0.00</span></strong></p>
+            </div>
+        </div>
+
+        <h2>Seleccionar Mes</h2>
+        <div class="form-group">
+            <label for="month-select">Mes:</label>
+            <select id="month-select" onchange="changeMonth()">
+                <option value="current">Este Mes</option>
+            </select>
+        </div>
+
+        <h2>Registrar un Nuevo Gasto</h2>
+        <div class="form-group">
+            <label for="expense-name">Nombre del Gasto</label>
+            <input type="text" id="expense-name" placeholder="Ejemplo: Comida, Transporte..." aria-label="Nombre del Gasto">
+        </div>
+        <div class="form-group">
+            <label for="expense-amount">Monto</label>
+            <input type="number" id="expense-amount" placeholder="Monto en USD" step="0.01" aria-label="Monto del Gasto">
+        </div>
+        <button onclick="addExpense()" aria-label="Registrar Gasto">Registrar Gasto</button>
+
+        <h2>Registrar un Nuevo Ingreso</h2>
+        <div class="form-group">
+            <label for="income-name">Nombre del Ingreso</label>
+            <input type="text" id="income-name" placeholder="Ejemplo: Salario, Freelance..." aria-label="Nombre del Ingreso">
+        </div>
+        <div class="form-group">
+            <label for="income-amount">Monto</label>
+            <input type="number" id="income-amount" placeholder="Monto en USD" step="0.01" aria-label="Monto del Ingreso">
+        </div>
+        <button onclick="addIncome()" aria-label="Registrar Ingreso">Registrar Ingreso</button>
+
+        <div id="expenses">
+            <h2>Gastos Registrados</h2>
+        </div>
+
+        <div id="incomes">
+            <h2>Ingresos Registrados</h2>
+        </div>
+    </div>
+
+    <footer>
+        <p>&copy; 2025 MonAI | Todos los derechos reservados</p>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>
