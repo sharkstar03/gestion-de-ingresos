@@ -76,6 +76,23 @@ button {
 button:hover {
     background-color: #16A085;
 }
+button.edit, button.delete {
+    padding: 5px 10px;
+    font-size: 0.9em;
+    margin-left: 5px; /* Adjusted margin */
+}
+button.edit {
+    background-color: #3498DB;
+}
+button.edit:hover {
+    background-color: #2980B9;
+}
+button.delete {
+    background-color: #E74C3C;
+}
+button.delete:hover {
+    background-color: #C0392B;
+}
 .expense-item, .income-item {
     background-color: white;
     padding: 20px;
@@ -85,6 +102,13 @@ button:hover {
     font-size: 1.1em;
     display: flex;
     justify-content: space-between;
+    align-items: center;
+}
+.expense-item span, .income-item span {
+    flex: 1;
+}
+.expense-item div, .income-item div {
+    display: flex;
     align-items: center;
 }
 .expense-item {

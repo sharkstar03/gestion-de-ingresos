@@ -44,4 +44,84 @@ function updateTotal() {
     document.getElementById("available-money").textContent = (totalIncomes - totalExpenses).toFixed(2);
 }
 
+function deleteExpense(index) {
+    expenses[currentYear][currentMonth].splice(index, 1);
+    localStorage.setItem('expenses', JSON.stringify(expenses));
+    renderExpenses();
+    updateTotal();
+}
+
+function deleteIncome(index) {
+    incomes[currentYear][currentMonth].splice(index, 1);
+    localStorage.setItem('incomes', JSON.stringify(incomes));
+    renderIncomes();
+    updateTotal();
+}
+
+function editExpense(index) {
+    const expense = expenses[currentYear][currentMonth][index];
+    const newName = prompt("Editar nombre del gasto:", expense.name);
+    const newAmount = parseFloat(prompt("Editar monto del gasto:", expense.amount));
+    if (newName && !isNaN(newAmount) && newAmount > 0) {
+        expenses[currentYear][currentMonth][index] = { ...expense, name: newName, amount: newAmount };
+        localStorage.setItem('expenses', JSON.stringify(expenses));
+        renderExpenses();
+        updateTotal();
+    }
+}
+
+function editIncome(index) {
+    const income = incomes[currentYear][currentMonth][index];
+    const newName = prompt("Editar nombre del ingreso:", income.name);
+    const newAmount = parseFloat(prompt("Editar monto del ingreso:", income.amount));
+    if (newName && !isNaN(newAmount) && newAmount > 0) {
+        incomes[currentYear][currentMonth][index] = { ...income, name: newName, amount: newAmount };
+        localStorage.setItem('incomes', JSON.stringify(incomes));
+        renderIncomes();
+        updateTotal();
+    }
+}
+
+function renderExpenses() {
+    const expensesContainer = document.getElementById("expenses");
+    expensesContainer.innerHTML = "<h2>Gastos Registrados</h2>";
+    if (expenses[currentYear] && expenses[currentYear][currentMonth]) {
+        expenses[currentYear][currentMonth].forEach((expense, index) => {
+            const expenseItem = document.createElement("div");
+            expenseItem.className = "expense-item";
+            expenseItem.innerHTML = `
+                <span>${expense.name}</span>
+                <span>$${expense.amount.toFixed(2)}</span>
+                <div>
+                    <button class="edit" onclick="editExpense(${index})">Editar</button>
+                    <button class="delete" onclick="deleteExpense(${index})">Eliminar</button>
+                </div>
+            `;
+            expensesContainer.appendChild(expenseItem);
+        });
+    }
+}
+
+function renderIncomes() {
+    const incomesContainer = document.getElementById("incomes");
+    incomesContainer.innerHTML = "<h2>Ingresos Registrados</h2>";
+    if (incomes[currentYear] && incomes[currentYear][currentMonth]) {
+        incomes[currentYear][currentMonth].forEach((income, index) => {
+            const incomeItem = document.createElement("div");
+            incomeItem.className = "income-item";
+            incomeItem.innerHTML = `
+                <span>${income.name}</span>
+                <span>$${income.amount.toFixed(2)}</span>
+                <div>
+                    <button class="edit" onclick="editIncome(${index})">Editar</button>
+                    <button class="delete" onclick="deleteIncome(${index})">Eliminar</button>
+                </div>
+            `;
+            incomesContainer.appendChild(incomeItem);
+        });
+    }
+}
+
 updateTotal();
+renderExpenses();
+renderIncomes();
