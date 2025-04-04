@@ -3,67 +3,235 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MonAI - Control de Finanzas</title>
+    <meta name="description" content="MonAI - Aplicación de control de finanzas personales">
+    <title>MonAI - Control de Finanzas Personales</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="Styles.css">
+    <link rel="icon" href="favicon.ico" type="image/x-icon">
+    <!-- Chart.js para gráficos -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
     <header>
-        <h1>Control de Finanzas - MonAI</h1>
+        <h1>MonAI - Control de Finanzas</h1>
+        <p>Tu asistente para una gestión financiera inteligente</p>
     </header>
+
+    <div class="toast-container" id="toast-container">
+        <!-- Las notificaciones se agregarán aquí dinámicamente -->
+    </div>
 
     <div class="container">
         <div class="summary">
             <h2>Resumen de Finanzas</h2>
             <div class="total">
-                <p>Total Gastado: $<span id="total-expenses">0.00</span></p>
-                <p>Total Ingresos: $<span id="total-incomes">0.00</span></p>
+                <p>Total Gastado: <strong>$<span id="total-expenses">0.00</span></strong></p>
+                <p>Total Ingresos: <strong>$<span id="total-incomes">0.00</span></strong></p>
                 <p><strong>Dinero Disponible: $<span id="available-money">0.00</span></strong></p>
             </div>
         </div>
 
-        <h2>Seleccionar Mes</h2>
-        <div class="form-group">
-            <label for="month-select">Mes:</label>
-            <select id="month-select" onchange="changeMonth()">
-                <option value="current">Este Mes</option>
-            </select>
+        <div class="chart-container">
+            <canvas id="finance-chart"></canvas>
         </div>
 
-        <h2>Registrar un Nuevo Gasto</h2>
-        <div class="form-group">
-            <label for="expense-name">Nombre del Gasto</label>
-            <input type="text" id="expense-name" placeholder="Ejemplo: Comida, Transporte..." aria-label="Nombre del Gasto">
-        </div>
-        <div class="form-group">
-            <label for="expense-amount">Monto</label>
-            <input type="number" id="expense-amount" placeholder="Monto en USD" step="0.01" aria-label="Monto del Gasto">
-        </div>
-        <button onclick="addExpense()" aria-label="Registrar Gasto">Registrar Gasto</button>
-
-        <h2>Registrar un Nuevo Ingreso</h2>
-        <div class="form-group">
-            <label for="income-name">Nombre del Ingreso</label>
-            <input type="text" id="income-name" placeholder="Ejemplo: Salario, Freelance..." aria-label="Nombre del Ingreso">
-        </div>
-        <div class="form-group">
-            <label for="income-amount">Monto</label>
-            <input type="number" id="income-amount" placeholder="Monto en USD" step="0.01" aria-label="Monto del Ingreso">
-        </div>
-        <button onclick="addIncome()" aria-label="Registrar Ingreso">Registrar Ingreso</button>
-
-        <div id="expenses">
-            <h2>Gastos Registrados</h2>
+        <div class="tabs">
+            <button class="tab active" data-tab="overview">Vista General</button>
+            <button class="tab" data-tab="expenses">Gastos</button>
+            <button class="tab" data-tab="incomes">Ingresos</button>
+            <button class="tab" data-tab="reports">Reportes</button>
         </div>
 
-        <div id="incomes">
-            <h2>Ingresos Registrados</h2>
+        <div id="overview" class="tab-content active">
+            <div class="card">
+                <h2>Seleccionar Periodo</h2>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="month-select">Mes:</label>
+                        <select id="month-select">
+                            <option value="0">Enero</option>
+                            <option value="1">Febrero</option>
+                            <option value="2">Marzo</option>
+                            <option value="3">Abril</option>
+                            <option value="4">Mayo</option>
+                            <option value="5">Junio</option>
+                            <option value="6">Julio</option>
+                            <option value="7">Agosto</option>
+                            <option value="8">Septiembre</option>
+                            <option value="9">Octubre</option>
+                            <option value="10">Noviembre</option>
+                            <option value="11">Diciembre</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="year-select">Año:</label>
+                        <select id="year-select">
+                            <!-- Se llenará dinámicamente con JavaScript -->
+                        </select>
+                    </div>
+                </div>
+                <button id="export-data" class="btn-secondary">Exportar Datos</button>
+            </div>
+
+            <div class="card">
+                <h2>Rápido Vistazo</h2>
+                <div id="quick-summary">
+                    <!-- Se llenará dinámicamente con JavaScript -->
+                </div>
+            </div>
+        </div>
+
+        <div id="expenses" class="tab-content">
+            <div class="card">
+                <h2>Registrar un Nuevo Gasto</h2>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="expense-name">Nombre del Gasto</label>
+                        <input type="text" id="expense-name" placeholder="Ejemplo: Comida, Transporte..." aria-label="Nombre del Gasto" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="expense-amount">Monto</label>
+                        <input type="number" id="expense-amount" placeholder="Monto en USD" step="0.01" aria-label="Monto del Gasto" required>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="expense-category">Categoría</label>
+                        <select id="expense-category">
+                            <option value="alimentacion">Alimentación</option>
+                            <option value="transporte">Transporte</option>
+                            <option value="vivienda">Vivienda</option>
+                            <option value="entretenimiento">Entretenimiento</option>
+                            <option value="salud">Salud</option>
+                            <option value="educacion">Educación</option>
+                            <option value="ropa">Ropa</option>
+                            <option value="otros">Otros</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="expense-date">Fecha</label>
+                        <input type="date" id="expense-date" aria-label="Fecha del Gasto">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="expense-description">Descripción (opcional)</label>
+                    <input type="text" id="expense-description" placeholder="Descripción adicional..." aria-label="Descripción del Gasto">
+                </div>
+                <button onclick="addExpense()" aria-label="Registrar Gasto">Registrar Gasto</button>
+            </div>
+
+            <div id="expenses-container">
+                <h2>Gastos Registrados</h2>
+                <div id="expenses-list">
+                    <!-- Se llenará dinámicamente con JavaScript -->
+                </div>
+            </div>
+        </div>
+
+        <div id="incomes" class="tab-content">
+            <div class="card">
+                <h2>Registrar un Nuevo Ingreso</h2>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="income-name">Nombre del Ingreso</label>
+                        <input type="text" id="income-name" placeholder="Ejemplo: Salario, Freelance..." aria-label="Nombre del Ingreso" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="income-amount">Monto</label>
+                        <input type="number" id="income-amount" placeholder="Monto en USD" step="0.01" aria-label="Monto del Ingreso" required>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="income-category">Categoría</label>
+                        <select id="income-category">
+                            <option value="salario">Salario</option>
+                            <option value="freelance">Freelance</option>
+                            <option value="inversiones">Inversiones</option>
+                            <option value="regalo">Regalo</option>
+                            <option value="venta">Venta</option>
+                            <option value="otros">Otros</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="income-date">Fecha</label>
+                        <input type="date" id="income-date" aria-label="Fecha del Ingreso">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="income-description">Descripción (opcional)</label>
+                    <input type="text" id="income-description" placeholder="Descripción adicional..." aria-label="Descripción del Ingreso">
+                </div>
+                <button onclick="addIncome()" aria-label="Registrar Ingreso">Registrar Ingreso</button>
+            </div>
+
+            <div id="incomes-container">
+                <h2>Ingresos Registrados</h2>
+                <div id="incomes-list">
+                    <!-- Se llenará dinámicamente con JavaScript -->
+                </div>
+            </div>
+        </div>
+
+        <div id="reports" class="tab-content">
+            <div class="card">
+                <h2>Reportes Financieros</h2>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="report-type">Tipo de Reporte</label>
+                        <select id="report-type">
+                            <option value="monthly">Mensual</option>
+                            <option value="category">Por Categoría</option>
+                            <option value="trend">Tendencia</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="report-period">Periodo</label>
+                        <select id="report-period">
+                            <option value="month">Este Mes</option>
+                            <option value="quarter">Último Trimestre</option>
+                            <option value="year">Este Año</option>
+                            <option value="custom">Personalizado</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div id="custom-dates" style="display: none;">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="start-date">Fecha Inicio</label>
+                            <input type="date" id="start-date">
+                        </div>
+                        <div class="form-group">
+                            <label for="end-date">Fecha Fin</label>
+                            <input type="date" id="end-date">
+                        </div>
+                    </div>
+                </div>
+                
+                <button id="generate-report">Generar Reporte</button>
+            </div>
+            
+            <div class="chart-container">
+                <canvas id="report-chart"></canvas>
+            </div>
+            
+            <div id="report-summary" class="card">
+                <!-- Se llenará dinámicamente con JavaScript -->
+            </div>
         </div>
     </div>
 
     <footer>
-        <p>&copy; 2025 MonAI | Todos los derechos reservados</p>
+        <div class="container">
+            <p>&copy; 2025 MonAI | Control de Finanzas Personales | <a href="docs.html">Documentación</a></p>
+            <p>Hecho con ❤️ para ayudarte a gestionar tus finanzas de manera inteligente</p>
+        </div>
     </footer>
 
-    <script src="Script.js"></script>
+    <script src="script.js"></script>
 </body>
 </html>
