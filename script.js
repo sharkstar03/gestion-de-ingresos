@@ -309,3 +309,160 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 });
+// Agregar estas funciones para asegurar la funcionalidad del tema oscuro
+
+// Función para alternar el tema oscuro
+function toggleDarkTheme() {
+    document.body.classList.toggle('dark-theme');
+    localStorage.setItem('dark-theme', document.body.classList.contains('dark-theme'));
+    
+    // Actualizar gráficos cuando cambia el tema
+    updateFinanceChart();
+    if (document.getElementById('reports').classList.contains('active')) {
+        generateReport();
+    }
+}
+
+// Añadir este código al final de la función setupEventListeners o initializeApp
+// para manejar el cambio de tema
+function setupThemeToggle() {
+    // Cargar preferencia de tema
+    if (localStorage.getItem('dark-theme') === 'true' || 
+        (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches && 
+         localStorage.getItem('dark-theme') !== 'false')) {
+        document.body.classList.add('dark-theme');
+    }
+    
+    // Toggle desde el botón de cambio de tema
+    const themeToggleBtn = document.getElementById('toggle-theme');
+    if (themeToggleBtn) {
+        themeToggleBtn.addEventListener('click', toggleDarkTheme);
+    }
+}
+
+// Versión mejorada de la función showToast para usar el nuevo diseño
+function showToast(message, type = 'info') {
+    const toast = document.createElement('div');
+    toast.className = `toast ${type}`;
+    
+    // Agregar icono según el tipo
+    let icon = 'fa-info-circle';
+    if (type === 'success') icon = 'fa-check-circle';
+    if (type === 'error') icon = 'fa-exclamation-circle';
+    
+    toast.innerHTML = `
+        <i class="fa-solid ${icon}"></i>
+        <span>${message}</span>
+    `;
+    
+    const container = document.getElementById('toast-container');
+    container.appendChild(toast);
+    
+    // Añadir clase para animación
+    setTimeout(() => {
+        toast.classList.add('show');
+    }, 10);
+    
+    // Remover después de 3 segundos
+    setTimeout(() => {
+        toast.classList.remove('show');
+        setTimeout(() => {
+            container.removeChild(toast);
+        }, 300);
+    }, 3000);
+}
+
+// Modificación de la función renderExpenses para usar el nuevo diseño con íconos
+function renderExpenses() {
+    const expensesContainer = document.getElementById('expenses-list');
+    if (!expensesContainer) return;
+    
+    expensesContainer.innerHTML = '';
+    
+    // Verificar si hay gastos para el mes y año seleccionados
+    if (!expenses[selectedYear] || !expenses[selectedYear][selectedMonth] || 
+        expenses[selectedYear][selectedMonth].length === 0) {
+        expensesContainer.innerHTML = '<p class="no-items">No hay gastos registrados para este periodo.</p>';
+        return;
+    }
+    
+    // Ordenar gastos por fecha (más reciente primero)
+    const sortedExpenses = [...expenses[selectedYear][selectedMonth]].sort((a, b) => {
+        return new Date(b.date) - new Date(a.date);
+    });
+    
+    // Crear elementos para cada gasto
+    sortedExpenses.forEach((expense, index) => {
+        const expenseElement = document.createElement('div');
+        expenseElement.className = 'expense-item fade-in';
+        
+        expenseElement.innerHTML = `
+            <div class="item-details">
+                <strong>${expense.name}</strong>
+                <span class="category-tag">${expense.category}</span>
+                <span class="date">${new Date(expense.date).toLocaleDateString()}</span>
+                ${expense.description ? `<span class="description">${expense.description}</span>` : ''}
+            </div>
+            <span class="item-amount">$${expense.amount.toFixed(2)}</span>
+            <div class="item-actions">
+                <button class="edit" onclick="editExpense(${index})">
+                    <i class="fa-solid fa-pen"></i> Editar
+                </button>
+                <button class="delete" onclick="deleteExpense(${index})">
+                    <i class="fa-solid fa-trash"></i> Eliminar
+                </button>
+            </div>
+        `;
+        
+        expensesContainer.appendChild(expenseElement);
+    });
+}
+
+// Modificación de la función renderIncomes para usar el nuevo diseño con íconos
+function renderIncomes() {
+    const incomesContainer = document.getElementById('incomes-list');
+    if (!incomesContainer) return;
+    
+    incomesContainer.innerHTML = '';
+    
+    // Verificar si hay ingresos para el mes y año seleccionados
+    if (!incomes[selectedYear] || !incomes[selectedYear][selectedMonth] || 
+        incomes[selectedYear][selectedMonth].length === 0) {
+        incomesContainer.innerHTML = '<p class="no-items">No hay ingresos registrados para este periodo.</p>';
+        return;
+    }
+    
+    // Ordenar ingresos por fecha (más reciente primero)
+    const sortedIncomes = [...incomes[selectedYear][selectedMonth]].sort((a, b) => {
+        return new Date(b.date) - new Date(a.date);
+    });
+    
+    // Crear elementos para cada ingreso
+    sortedIncomes.forEach((income, index) => {
+        const incomeElement = document.createElement('div');
+        incomeElement.className = 'income-item fade-in';
+        
+        incomeElement.innerHTML = `
+            <div class="item-details">
+                <strong>${income.name}</strong>
+                <span class="category-tag">${income.category}</span>
+                <span class="date">${new Date(income.date).toLocaleDateString()}</span>
+                ${income.description ? `<span class="description">${income.description}</span>` : ''}
+            </div>
+            <span class="item-amount">$${income.amount.toFixed(2)}</span>
+            <div class="item-actions">
+                <button class="edit" onclick="editIncome(${index})">
+                    <i class="fa-solid fa-pen"></i> Editar
+                </button>
+                <button class="delete" onclick="deleteIncome(${index})">
+                    <i class="fa-solid fa-trash"></i> Eliminar
+                </button>
+            </div>
+        `;
+        
+        incomesContainer.appendChild(incomeElement);
+    });
+}
+
+// Agrega esto al final de la función document.addEventListener('DOMContentLoaded', function() { ... })
+setupThemeToggle();
